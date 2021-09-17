@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.doraemonqwq.dora.dao.mapper.RoleMapper">
+    <resultMap id="role" type="Role">
+        <result column="role_id" property="roleId"/>
+        <result column="name" property="roleName"/>
+        <result column="explanation" property="roleExplanation"/>
+    </resultMap>
+
+    <!-- 查询全部数据 -->
+    <select id="selectAllRole" resultMap="role">
+        select * from role
+    </select>
+
+    <!-- 查询单个数据 -->
+    <select id="selectOneRole" resultMap="role">
+        select * from role
+        <where>
+            <if test="roleId != 0">role_id = #{roleId}</if>
+            <if test="roleName != null || roleName != ''">name = #{roleName]</if>
+        </where>
+    </select>
+
+    <!-- 添加单个数据 -->
+    <insert id="insertRole" parameterType="Role">
+        insert into role (role_id, name, explanation) value (#{roleId},#{roleName},#{roleExplanation})
+    </insert>
+
+    <!-- 删除单个数据 -->
+    <delete id="deleteRole" parameterType="int">
+        delete from role where role_id = #{roleId}
+    </delete>
+
+    <!-- 更新单个数据(动态) -->
+    <update id="updateRole" parameterType="map">
+        update role
+        <trim prefix="set" suffixOverrides=",">
+            <if test="roleName != null">
+                name = #{roleName},
+            </if>
+            <if test="roleExplanation != null">
+                explanation = #{roleExplanation},
+            </if>
+        </trim>
+        where role_id = #{roleId}
+    </update>
+
+</mapper>

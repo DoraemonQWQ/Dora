@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.doraemonqwq.dora.dao.mapper.UserRoleMapper">
+    <!-- 根据userId查询用户名 -->
+    <select id="selectRoleNameByUsername" resultType="string">
+        select role.name from user
+          left join user_role_ass ura on user.user_id = ura.user_id
+          left join role on role.role_id = ura.role_id where user.username = #{username};
+    </select>
+
+    <!-- 根据userid删除指定 -->
+    <delete id="deleteUserRoleAssById" parameterType="int">
+        delete from user_role_ass where user_id = #{userId};
+    </delete>
+
+    <!-- 添加从表数据 -->
+    <insert id="insertUserRoleAss" parameterType="int">
+        insert into user_role_ass (role_id, user_id) VALUE (#{roleId}, #{userId})
+    </insert>
+
+</mapper>

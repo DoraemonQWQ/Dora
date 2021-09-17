@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.doraemonqwq.dora.dao.mapper.UserMapper">
+    <resultMap id="user" type="User">
+        <result column="user_id" property="userId"/>
+        <result column="creation_date" property="creationDate"/>
+        <result column="last_login_time" property="lastLoginTime"/>
+    </resultMap>
+
+    <!-- 查询全部用户信息 -->
+    <select id="selectAllUser" resultMap="user">
+        select * from user
+    </select>
+
+    <!-- 查询单个用户信息 -->
+    <select id="selectByUsernameUser" resultMap="user">
+        select * from user where username = #{username}
+    </select>
+
+    <select id="selectByUserIdUser" resultMap="user">
+        select * from user where user_id = #{userId}
+    </select>
+
+    <!-- 添加一个用户信息 -->
+    <insert id="insertUser" parameterType="User">
+        insert into
+            user (username,
+                  password,
+                  email,
+                  creation_date,
+                  last_login_time)
+            value (#{username},
+                   #{password},
+                   #{email},
+                   #{creationDate},
+                   #{lastLoginTime});
+    </insert>
+
+    <!-- 删除一个用户信息，以id方式来进行删除 -->
+    <delete id="deleteUser" parameterType="int">
+        delete from user where user_id = #{userId};
+    </delete>
+
+    <!-- 更新一个用户信息，以id进行识别 -->
+    <update id="updateUser" parameterType="map">
+        update user
+
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="username != null">
+            username = #{username},
+            </if>
+            <if test="password != null">
+            password = #{password},
+            </if>
+            <if test="email != null">
+            email = #{email},
+            </if>
+            <if test="creationDate != null">
+            creation_date = #{creationDate},
+            </if>
+            <if test="lastLoginTime != null">
+            last_login_time = #{lastLoginTime},
+            </if>
+            <if test="token != null">
+                token = #{token},
+            </if>
+        </trim>
+        where user_id = #{userId}
+    </update>
+
+    <!-- 查询token -->
+    <select id="selectToken" resultType="string">
+        select token from user where user_id = #{userId}
+    </select>
+
+
+
+</mapper>
