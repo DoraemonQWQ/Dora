@@ -86,7 +86,8 @@ class DoraApplicationTests {
 //        users1 = JSONUtil.parseArray(json).toList(User.class);
 //        System.out.println(users1);
 
-
+//        String substring = this.getClass().getClassLoader().getResource("").getPath().substring(1);
+//        System.out.println(substring);
     }
 
 }

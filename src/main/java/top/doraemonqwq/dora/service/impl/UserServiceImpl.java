@@ -110,6 +110,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean updateLoginTime(Integer userId, String lastLoginTime) {
+        if (objectIsNull(lastLoginTime)) {
+            throw new RuntimeException("需要修改的数据为空；" + Thread.currentThread().getStackTrace()[1].getMethodName());
+        }
+
         String userIdStr = String.valueOf(userId);
 
         redisUtil.del(userIdStr);
@@ -128,6 +132,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean updateUsername(Integer userId, String newUsername) {
+
+        if (objectIsNull(newUsername)) {
+            throw new RuntimeException("需要修改的数据为空；" + Thread.currentThread().getStackTrace()[1].getMethodName());
+        }
+
         String userIdStr = String.valueOf(userId);
 
         if (userMapper.selectByUserIdUser(userId).getUsername().equals(newUsername)) {
@@ -154,6 +163,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean updatePassword(Integer userId, String password) {
+
+        if (objectIsNull(password)) {
+            throw new RuntimeException("需要修改的数据为空；" + Thread.currentThread().getStackTrace()[1].getMethodName());
+        }
+
         redisUtil.del(String.valueOf(userId));
 
         Map<String, Object> map = new HashMap<>();
@@ -170,6 +184,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean updateEmail(Integer userId, String email) {
+
+        if (objectIsNull(email)) {
+            throw new RuntimeException("需要修改的数据为空；" + Thread.currentThread().getStackTrace()[1].getMethodName());
+        }
+
         redisUtil.del(String.valueOf(userId));
 
         Map<String, Object> map = new HashMap<>();
@@ -225,4 +244,16 @@ public class UserServiceImpl implements UserService {
         return i > 0;
 
     }
+
+    /**
+     * 判断数据是否为空
+     * @return 为空返回true，不为空返回false
+     */
+    private boolean objectIsNull(Object obj) {
+        if (obj == null) {
+            return true;
+        }
+        return false;
+    }
+
 }

@@ -61,17 +61,7 @@ public class ResponseResult {
 
         return JSONUtil.parse(this);
 
-//        response.setStatus(statusCode);
-//        response.setContentType("application/json");
-//        response.setCharacterEncoding("utf-8");
-//        response.setHeader("Content-type", "application/json;charset=UTF-8");
-//        response.setHeader("Access-Control-Allow-Headers", "Authorization, authorization,token, Accept, Origin, X-Requested-With, Content-Type, Last-Modified");
-//        try {
-//            response.getWriter().print(msg);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-
-
     }
+
+
 }

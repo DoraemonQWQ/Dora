@@ -111,6 +111,29 @@
                 </configuration>
             </plugin>
         </plugins>
+
+        <resources>
+            <resource>
+                <directory>static/video</directory>
+                <!--targetPath将打包到指定的目录-->
+                <targetPath>static/video</targetPath>
+                <!--表示index.html, jquery.js是一个资源-->
+                <includes>
+                    <include>*.mp4</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>static/video</directory>
+                <!--排除index.html, jquery.js-->
+                <excludes>
+                    <exclude>*.mp4</exclude>
+                </excludes>
+                <includes>
+                    <include>**</include>
+                </includes>
+            </resource>
+        </resources>
+
     </build>
 
 </project>

@@ -92,15 +92,17 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
                 .headers().frameOptions().disable()
             .and()
-                // 设置自定义注销请求路径
-//                .logout().logoutUrl(SecurityConstants.AUTH_LOGOUT_URL)
-//            .and()
                 .authorizeRequests()
                 // 指定路径下的所有请求需要验证
                 .antMatchers("/").permitAll()
                 // 放行登录路径和注册路径
                 .antMatchers(HttpMethod.POST, SecurityConstants.AUTH_LOGIN_URL).permitAll()
                 .antMatchers(HttpMethod.POST, SecurityConstants.AUTH_LOGGING_URL).permitAll()
+                // 放行全年龄主页，全年龄动漫详细页面，全年龄动漫播放页面
+                .antMatchers(HttpMethod.POST, "/api/show-all-ages/**").permitAll()
+                // 放行视频请求页面
+                .antMatchers(HttpMethod.GET, "/api/test/video/**").permitAll()
+//                .antMatchers(HttpMethod.POST, "/api/test/video/**").permitAll()
                 // 其余的请求路径都需要验证
                 .anyRequest().authenticated()
             .and()
@@ -110,6 +112,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             .and()
                 // 导入jwt拦截器
                 .apply(securityConfigurationAdapter());
-//        super.configure(http);
+
     }
 }

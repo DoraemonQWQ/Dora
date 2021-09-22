@@ -5,9 +5,20 @@ spring:
       username: root
       password: 123456
 
+
   redis:
     database: 0
     # redis ip地址
     host: 127.0.0.1
     port: 6379
     password: 123456
+
+  # 设置上传文件的最大值
+  servlet:
+    multipart:
+      # 单个文件最大值 以byte为单位
+      max-file-size: 10240000
+      max-request-size: 102400000
+
+server:
+  port: 8081

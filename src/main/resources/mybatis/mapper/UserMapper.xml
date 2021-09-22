@@ -46,7 +46,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <!-- 更新一个用户信息，以id进行识别 -->
     <update id="updateUser" parameterType="map">
         update user
-
         <trim prefix="SET" suffixOverrides=",">
             <if test="username != null">
             username = #{username},
