@@ -45,7 +45,6 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public JwtUser authLogin(UserLoginDTO userLoginDTO) {
-
         String username = userLoginDTO.getUsername();
         String password = userLoginDTO.getPassword();
         boolean isRemember = userLoginDTO.getRememberMe();
@@ -58,7 +57,7 @@ public class AuthServiceImpl implements AuthService {
         }
         // 判断用户的密码是否正确，不正确返回空JwtUser
         if (!bCryptPasswordEncoder.matches(password, user.getPassword())) {
-            return null;
+            return JwtUser.create();
         }
         // 如果密码正确，查询表获取用户的角色
         List<String> roles = userRoleService.listRoleNames(username);

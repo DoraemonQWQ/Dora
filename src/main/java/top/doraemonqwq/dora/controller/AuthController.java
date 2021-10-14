@@ -33,9 +33,12 @@ public class AuthController {
 
     @PostMapping("/login")
     public JSON authLogin(@RequestBody UserLoginDTO userLoginDTO) {
-
         // 验证用户信息 得到一个封装好的JwtUser
         JwtUser jwtUser = authService.authLogin(userLoginDTO);
+
+        if (jwtUser.isNull()) {
+            return ResponseResult.create().ok(JwtUser.create().toJSON(), "/api/auth/login", "用户名或密码错误");
+        }
 
         // 将JwtUser中的token的开头添加标识
         jwtUser.addTokenBearer(SecurityConstants.TOKEN_PREFIX);

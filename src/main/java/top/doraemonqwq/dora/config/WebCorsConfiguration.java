@@ -29,7 +29,7 @@ public class WebCorsConfiguration implements WebMvcConfigurer {
         config.addAllowedMethod(HttpMethod.GET);
         config.addAllowedMethod(HttpMethod.POST);
         // 开放所有的域
-        config.addAllowedOrigin("*");
+        config.addAllowedOriginPattern("*");
 
         // 添加映射l路径，/**代表全部路径都套用当前跨域访问权限的设置
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
