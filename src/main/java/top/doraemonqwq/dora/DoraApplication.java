@@ -2,8 +2,11 @@ package top.doraemonqwq.dora;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.ComponentScan;
 
+/**
+ * @author Doraemon
+ * 项目的启动类
+ */
 @SpringBootApplication
 public class DoraApplication {
 

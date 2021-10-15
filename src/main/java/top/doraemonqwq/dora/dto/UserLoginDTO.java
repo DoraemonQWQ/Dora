@@ -10,11 +10,15 @@ import lombok.Data;
 @Data
 public class UserLoginDTO {
 
+    public static String METHOD_USERNAME = "username";
+    public static String METHOD_EMAIL = "email";
+
     private String username;
     private String password;
     /**
      * 是否记住我 默认为false
      */
     private Boolean rememberMe = false;
+    private String method = METHOD_USERNAME;
 
 }

@@ -1,7 +1,6 @@
 package top.doraemonqwq.dora.service.impl;
 
 import cn.hutool.json.JSON;
-import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -42,8 +41,7 @@ public class UserServiceImpl implements UserService {
         if (redisUtil.hasKey(String.valueOf(userId))) {
             // 如果有，那么直接取redis中的数据
             JSON userJson = (JSON) redisUtil.get(String.valueOf(userId));
-            User user = userJson.toBean(User.class);
-            return user;
+            return userJson.toBean(User.class);
         }
         // 如果没有，则查询mysql中的数据，并且存放到redis中
         User user = userMapper.selectByUserIdUser(userId);
@@ -60,13 +58,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User selectUserByEmail(String email) {
+        return userMapper.selectUserByEmail(email);
+    }
+
+    @Override
     public List<User> selectUser() {
         // 先查询redis中有没有数据
         if (redisUtil.hasKey(USERS)) {
             // 有则使用
             JSON usersJson = (JSON) redisUtil.get(USERS);
-            List<User> users = JSONUtil.parseArray(usersJson.toString()).toList(User.class);
-            return users;
+            return JSONUtil.parseArray(usersJson.toString()).toList(User.class);
         }
         // 没有则查询mysql，然后将数据存放到redis
         List<User> users = userMapper.selectAllUser();
@@ -104,6 +106,7 @@ public class UserServiceImpl implements UserService {
         if (userMapper.deleteUser(userId) > 0) {
             redisUtil.del(String.valueOf(userId));
             updateRedisByUsers();
+            return true;
         }
         return false;
     }
@@ -250,10 +253,7 @@ public class UserServiceImpl implements UserService {
      * @return 为空返回true，不为空返回false
      */
     private boolean objectIsNull(Object obj) {
-        if (obj == null) {
-            return true;
-        }
-        return false;
+        return obj == null;
     }
 
 }

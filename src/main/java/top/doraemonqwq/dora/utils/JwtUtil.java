@@ -7,10 +7,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import top.doraemonqwq.dora.constant.RoleConstants;
 import top.doraemonqwq.dora.constant.SecurityConstants;
-import top.doraemonqwq.dora.entity.security.Role;
 
 import javax.xml.bind.DatatypeConverter;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -23,8 +21,10 @@ import java.util.stream.Collectors;
  */
 public class JwtUtil {
 
-    // 生成token的key
-    private static final byte[] tokenKey = DatatypeConverter.parseBase64Binary(SecurityConstants.JWT_SECRET_KEY);
+    /**
+     * 生成token的key
+     */
+    private static final byte[] TOKEN_KEY = DatatypeConverter.parseBase64Binary(SecurityConstants.JWT_SECRET_KEY);
 
     /**
      * 根据用户名和用户角色生成token
@@ -37,14 +37,13 @@ public class JwtUtil {
         // 得到token的过期时间
         long expiration = isRemember ? SecurityConstants.EXPIRATION_REMEMBER_TIME : SecurityConstants.EXPIRATION_TIME;
         // 将所有的载荷信息，存入token中
-        String token = JWT.create()
+        return JWT.create()
                 .setHeader("JWT", SecurityConstants.TOKEN_TYPE)
                 .setPayload("userId", userId)
                 .setPayload("roles", roles)
                 .setPayload("expiration", expiration)
-                .setKey(tokenKey)
+                .setKey(TOKEN_KEY)
                 .sign();
-        return token;
     }
 
     /**
@@ -53,7 +52,7 @@ public class JwtUtil {
      * @return true为有效，false为无效
      */
     public static boolean validateToken(String token) {
-        return JWTUtil.verify(token, tokenKey);
+        return JWTUtil.verify(token, TOKEN_KEY);
 
     }
 

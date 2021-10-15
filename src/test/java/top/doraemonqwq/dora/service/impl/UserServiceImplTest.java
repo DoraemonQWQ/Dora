@@ -6,9 +6,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import top.doraemonqwq.dora.DoraApplication;
 import top.doraemonqwq.dora.entity.pojo.User;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @SpringBootTest(classes = DoraApplication.class)
 public class UserServiceImplTest {
@@ -31,6 +29,12 @@ public class UserServiceImplTest {
     @Test
     public void selectOneUserTest() {
         User user = userService.selectUser("admina");
+        System.out.println(user);
+    }
+
+    @Test
+    public void selectUserByEmailTest() {
+        User user = userService.selectUserByEmail("root@qq.com");
         System.out.println(user);
     }
 
@@ -64,6 +68,13 @@ public class UserServiceImplTest {
     public void getTokenTest() {
         String token = userService.getToken(1006);
         System.out.println(token);
+    }
+
+    // 通过
+    @Test
+    public void deleteUserTest() {
+        System.out.println(userService.deleteUser(1006));
+        System.out.println(userService.selectUser(1006));
     }
 
 

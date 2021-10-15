@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service;
 import top.doraemonqwq.dora.entity.pojo.User;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Doraemon
@@ -17,34 +16,41 @@ public interface UserService {
      * @param userId 需要查询的用户id
      * @return          User实体对象
      */
-    public User selectUser(Integer userId);
+    User selectUser(Integer userId);
 
     /**
      * 通过用户名查询用户信息
      * @param username 需要查询的用户名
      * @return 返回用户信息
      */
-    public User selectUser(String username);
+    User selectUser(String username);
+
+    /**
+     * 通过邮箱查询用户信息
+     * @param email 需要查询的邮箱
+     * @return 返回用户信息
+     */
+    User selectUserByEmail(String email);
 
     /**
      * 查询全部用户信息
      * @return 用list包装的多个用户信息
      */
-    public List<User> selectUser();
+    List<User> selectUser();
 
     /**
      * 存储一个用户信息
      * @param user      需要添加的用户信息
      * @return          成功返回true，失败返回false
      */
-    public boolean insertUser(User user);
+    boolean insertUser(User user);
 
     /**
      * 删除一个用户信息
      * @param userId  需要删除的用户id
      * @return          成功返回true，失败返回false
      */
-    public boolean deleteUser(Integer userId);
+    boolean deleteUser(Integer userId);
 
 
     /**
@@ -53,7 +59,7 @@ public interface UserService {
      * @param lastLoginTime 新的最后登录时间
      * @return          成功返回true，失败返回false
      */
-    public boolean updateLoginTime(Integer userId, String lastLoginTime);
+    boolean updateLoginTime(Integer userId, String lastLoginTime);
 
     /**
      * 更新用户的用户名
@@ -61,7 +67,7 @@ public interface UserService {
      * @param newUsername 新的用户名
      * @return 成功为true，失败为false
      */
-    public boolean updateUsername(Integer userId, String newUsername);
+    boolean updateUsername(Integer userId, String newUsername);
 
     /**
      * 更新用户最后登录时间
@@ -69,7 +75,7 @@ public interface UserService {
      * @param password 新的密码
      * @return          成功返回true，失败返回false
      */
-    public boolean updatePassword(Integer userId, String password);
+    boolean updatePassword(Integer userId, String password);
 
     /**
      * 更新用户最后登录时间
@@ -77,14 +83,14 @@ public interface UserService {
      * @param email 新的邮箱
      * @return          成功返回true，失败返回false
      */
-    public boolean updateEmail(Integer userId, String email);
+    boolean updateEmail(Integer userId, String email);
 
     /**
      * 查询token
      * @param userId 指定用户id
      * @return token
      */
-    public String getToken(Integer userId);
+    String getToken(Integer userId);
 
 
     /**
@@ -93,12 +99,12 @@ public interface UserService {
      * @param token 新的token
      * @return TRUE为成功，FALSE为失败
      */
-    public boolean updateToken(Integer userId, String token);
+    boolean updateToken(Integer userId, String token);
 
     /**
      * 删除token
      * @param userId 需要删除的用户id
      * @return 成功返回true，失败返回false
      */
-    public boolean delToken(Integer userId);
+    boolean delToken(Integer userId);
 }

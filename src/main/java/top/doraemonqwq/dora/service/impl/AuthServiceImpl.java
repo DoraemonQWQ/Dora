@@ -1,29 +1,25 @@
 package top.doraemonqwq.dora.service.impl;
 
 import cn.hutool.core.date.DateUtil;
-import io.jsonwebtoken.Jwt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.Transient;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import top.doraemonqwq.dora.constant.RoleConstants;
-import top.doraemonqwq.dora.constant.SecurityConstants;
 import top.doraemonqwq.dora.dto.UserDTO;
 import top.doraemonqwq.dora.dto.UserLoggingDTO;
+import top.doraemonqwq.dora.dto.UserLoginDTO;
 import top.doraemonqwq.dora.entity.pojo.User;
 import top.doraemonqwq.dora.security.pojo.JwtUser;
 import top.doraemonqwq.dora.service.AuthService;
 import top.doraemonqwq.dora.service.UserRoleService;
 import top.doraemonqwq.dora.service.UserService;
 import top.doraemonqwq.dora.utils.JwtUtil;
-import top.doraemonqwq.dora.dto.UserLoginDTO;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -45,12 +41,20 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public JwtUser authLogin(UserLoginDTO userLoginDTO) {
+        String method = userLoginDTO.getMethod();
         String username = userLoginDTO.getUsername();
         String password = userLoginDTO.getPassword();
         boolean isRemember = userLoginDTO.getRememberMe();
+        User user = null;
 
-        // 查询用户是否存在
-        User user = userService.selectUser(username);
+        // 判断用户的登录方式
+        if (method.equals(UserLoginDTO.METHOD_USERNAME)) {
+            // 查询用户是否存在
+            user = userService.selectUser(username);
+        } else if (method.equals(UserLoginDTO.METHOD_EMAIL)) {
+            user = userService.selectUserByEmail(username);
+        }
+
         // 如果不存在，则直接返回空JwtUser
         if (user == null) {
             return JwtUser.create();
@@ -134,13 +138,13 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void authLogout(Integer userId) {
-        /**
-         * 清除redis和mysql中的token
+        /*
+          清除redis和mysql中的token
          */
         userService.delToken(userId);
 
-        /**
-         * 清除security中存储的上下文
+        /*
+          清除security中存储的上下文
          */
         SecurityContextHolder.clearContext();
 
