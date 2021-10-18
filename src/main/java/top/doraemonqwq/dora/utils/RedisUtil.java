@@ -1,10 +1,14 @@
 package top.doraemonqwq.dora.utils;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.Cursor;
+import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -21,6 +25,27 @@ public class RedisUtil {
     private RedisTemplate redisTemplate;
     public static final String LEFT = "left";
     public static final String RIGHT = "right";
+
+    /**
+     * 模糊查询key
+     * @param pattern 模糊查询的表达式 如 user*
+     * @return
+     */
+    public Set<String> scan(String pattern) {
+        return (Set<String>) redisTemplate.execute((RedisCallback<Set<String>>) connection -> {
+            Set<String> keysTmp = new HashSet<>();
+            try (Cursor<byte[]> cursor = connection.scan(new ScanOptions.ScanOptionsBuilder()
+                    .match(pattern)
+                    .count(10000).build())) {
+                while (cursor.hasNext()) {
+                    keysTmp.add(new String(cursor.next(), "Utf-8"));
+                }
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+            return keysTmp;
+        });
+    }
 
     /**
      * 指定缓存失效时间

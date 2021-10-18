@@ -2,9 +2,7 @@ package top.doraemonqwq.dora.security.pojo;
 
 import cn.hutool.json.JSON;
 import cn.hutool.json.JSONUtil;
-import top.doraemonqwq.dora.constant.SecurityConstants;
 import top.doraemonqwq.dora.dto.UserDTO;
-import top.doraemonqwq.dora.dto.UserLoginDTO;
 import top.doraemonqwq.dora.entity.pojo.User;
 
 import java.util.List;
@@ -26,6 +24,11 @@ public class JwtUser {
      * 请求头
      */
     private String header;
+
+    /**
+     * 错误信息 默认为空
+     */
+    private String error;
 
     public static JwtUser create() {
         return new JwtUser();
@@ -77,6 +80,15 @@ public class JwtUser {
         userDTO.setRoles(roles);
         this.userDTO = userDTO;
         return this;
+    }
+
+    public JwtUser setError(String error) {
+        this.error = error;
+        return this;
+    }
+
+    public String getError() {
+        return error;
     }
 
     @Override

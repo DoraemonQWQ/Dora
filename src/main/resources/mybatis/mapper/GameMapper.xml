@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.doraemonqwq.dora.dao.mapper.GameMapper">
+    <resultMap id="game" type="GamePojo">
+        <result column="game_id" property="id"/>
+    </resultMap>
+
+
+    <select id="selectGames" resultMap="game">
+        select * from games
+    </select>
+
+    <select id="selectGamesByFuzzyText" resultMap="game">
+        select * from games where name like concat(concat('%', #{text}),'%')
+    </select>
+
+    <select id="selectGameById" resultMap="game">
+        select * from games where game_id = #{id}
+    </select>
+
+    <insert id="addGame" parameterType="GamePojo">
+        insert into
+            games(name,introduction,url) value (#{name},#{introduction},url)
+    </insert>
+
+    <update id="updateGame" parameterType="map">
+        update games
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null">
+                name = #{name},
+            </if>
+            <if test="introduction != null">
+                introduction = #{introduction},
+            </if>
+            <if test="url != null">
+                url = #{url},
+            </if>
+            where game_id = #{id}
+        </trim>
+    </update>
+
+    <delete id="delGame" parameterType="int">
+        delete from games where game_id = #{id}
+    </delete>
+
+</mapper>

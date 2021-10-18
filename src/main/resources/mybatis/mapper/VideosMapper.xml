@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.doraemonqwq.dora.dao.mapper.VideosMapper">
+
+    <!-- 根据userId查询用户名 -->
+    <select id="selectImagesAssByAnimeId" resultType="VideoPojo">
+        select videos.id, videos.name, videos.url from animes
+                                                           left join animes_videos_ass ava on animes.anime_id = ava.anime_id
+                                                           left join videos on videos.id = ava.video_id where animes.anime_id = #{anime_id};
+    </select>
+
+    <!-- 根据userId查询用户名 -->
+    <select id="selectImagesAssByMmdId" resultType="VideoPojo">
+        select videos.id, videos.name, videos.url from mmds
+                                                           left join mmd_videos_ass mva on mmds.mmd_id = mva.mmd_id
+                                                           left join videos on videos.id = mva.video_id where mmds.mmd_id = #{mmd_id};
+    </select>
+
+    <select id="selectVideoById" resultType="VideoPojo">
+        select * from videos where videos.id = #{video_id};
+    </select>
+
+
+    <insert id="addVideo" parameterType="VideoPojo">
+        insert into videos(name,url) value (#{name}, #{url});
+    </insert>
+
+    <!-- 添加从表数据 -->
+    <insert id="addVideoAnimeAss" parameterType="int">
+        insert into animes_videos_ass (anime_id, video_id) VALUE (#{anime_id}, #{video_id})
+    </insert>
+
+    <!-- 添加从表数据 -->
+    <insert id="addVideoMmdAss" parameterType="int">
+        insert into mmd_videos_ass (mmd_id, video_id) VALUE (#{mmd_id}, #{video_id})
+    </insert>
+
+    <update id="updateVideo" parameterType="map">
+        update images set
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null">
+                name = #{name},
+            </if>
+            <if test="url != null">
+                url = #{url},
+            </if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="delVideo" parameterType="int">
+        delete from videos where id = #{video_id}
+    </delete>
+
+</mapper>

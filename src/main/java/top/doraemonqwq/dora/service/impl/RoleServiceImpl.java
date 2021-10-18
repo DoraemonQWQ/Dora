@@ -3,10 +3,9 @@ package top.doraemonqwq.dora.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import top.doraemonqwq.dora.dao.mapper.RoleMapper;
-import top.doraemonqwq.dora.entity.security.Role;
+import top.doraemonqwq.dora.entity.pojo.Role;
 import top.doraemonqwq.dora.service.RoleService;
 
-import java.security.PrivateKey;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

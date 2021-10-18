@@ -2,6 +2,7 @@ package top.doraemonqwq.dora.service.impl;
 
 import cn.hutool.json.JSON;
 import cn.hutool.json.JSONUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import top.doraemonqwq.dora.dao.mapper.UserMapper;
@@ -18,6 +19,7 @@ import java.util.Map;
  * UserService的实现类
  */
 @Service("UserServiceImpl")
+@Slf4j
 public class UserServiceImpl implements UserService {
 
     @Autowired
@@ -26,28 +28,30 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private RedisUtil redisUtil;
 
-    private final String USERS = "users";
-    private final String USERTOKEN = "_Token";
+    private final String REDIS_USER_ALL_NAME = "users";
+    private final String REDIS_USER_TOKEN_SUFFIX = "_Token";
+    private final String REDIS_USER_ID_PREFIX = "user_";
     private final String USERID = "userId";
     private final String USERNAME = "username";
     private final String PASSWORD = "password";
     private final String EMAIL = "email";
     private final String LAST_LOGIN_TIME = "lastLoginTime";
+    private final String INTRODUCTION = "introduction";
     private final String TOKEN = "token";
 
     @Override
     public User selectUser(Integer userId) {
         // 查询redis中有没有这个用户的数据
-        if (redisUtil.hasKey(String.valueOf(userId))) {
+        if (redisUtil.hasKey(REDIS_USER_ID_PREFIX + userId)) {
             // 如果有，那么直接取redis中的数据
-            JSON userJson = (JSON) redisUtil.get(String.valueOf(userId));
+            JSON userJson = (JSON) redisUtil.get(REDIS_USER_ID_PREFIX + userId);
             return userJson.toBean(User.class);
         }
         // 如果没有，则查询mysql中的数据，并且存放到redis中
         User user = userMapper.selectByUserIdUser(userId);
         if (user != null) {
             JSON userJson = JSONUtil.parse(user);
-            redisUtil.set(String.valueOf(userId), userJson);
+            redisUtil.set(REDIS_USER_ID_PREFIX + userId, userJson);
         }
         return user;
     }
@@ -65,15 +69,15 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> selectUser() {
         // 先查询redis中有没有数据
-        if (redisUtil.hasKey(USERS)) {
+        if (redisUtil.hasKey(REDIS_USER_ALL_NAME)) {
             // 有则使用
-            JSON usersJson = (JSON) redisUtil.get(USERS);
+            JSON usersJson = (JSON) redisUtil.get(REDIS_USER_ALL_NAME);
             return JSONUtil.parseArray(usersJson.toString()).toList(User.class);
         }
         // 没有则查询mysql，然后将数据存放到redis
         List<User> users = userMapper.selectAllUser();
         JSON usersJson = JSONUtil.parse(users);
-        redisUtil.set(USERS, usersJson);
+        redisUtil.set(REDIS_USER_ALL_NAME, usersJson);
         return users;
     }
 
@@ -82,11 +86,11 @@ public class UserServiceImpl implements UserService {
      */
     private void updateRedisByUsers() {
         // 删除旧缓存
-        redisUtil.del(USERS);
+        redisUtil.del(REDIS_USER_ALL_NAME);
         // 将新的缓存添加进去
         List<User> users = userMapper.selectAllUser();
         JSON usersJson = JSONUtil.parse(users);
-        redisUtil.set(USERS, usersJson);
+        redisUtil.set(REDIS_USER_ALL_NAME, usersJson);
     }
 
 
@@ -94,8 +98,6 @@ public class UserServiceImpl implements UserService {
     public boolean insertUser(User user) {
         if (userMapper.insertUser(user) > 0 )  {
             updateRedisByUsers();
-            JSON userJson = JSONUtil.parse(user);
-            redisUtil.set(user.getUsername(), userJson);
             return true;
         }
         return false;
@@ -104,7 +106,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean deleteUser(Integer userId) {
         if (userMapper.deleteUser(userId) > 0) {
-            redisUtil.del(String.valueOf(userId));
+            redisUtil.del(REDIS_USER_ID_PREFIX + userId);
             updateRedisByUsers();
             return true;
         }
@@ -114,12 +116,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean updateLoginTime(Integer userId, String lastLoginTime) {
         if (objectIsNull(lastLoginTime)) {
-            throw new RuntimeException("需要修改的数据为空；" + Thread.currentThread().getStackTrace()[1].getMethodName());
+            log.error("需要修改的数据为空；" + Thread.currentThread().getStackTrace()[1].getMethodName());
         }
 
-        String userIdStr = String.valueOf(userId);
-
-        redisUtil.del(userIdStr);
+        redisUtil.del(REDIS_USER_ID_PREFIX + userId);
 
         Map<String, Object> map = new HashMap<>();
         map.put(USERID, userId);
@@ -127,7 +127,6 @@ public class UserServiceImpl implements UserService {
 
         if (userMapper.updateUser(map) > 0) {
             updateRedisByUsers();
-            selectUser(userId);
             return true;
         }
         return false;
@@ -137,20 +136,19 @@ public class UserServiceImpl implements UserService {
     public boolean updateUsername(Integer userId, String newUsername) {
 
         if (objectIsNull(newUsername)) {
-            throw new RuntimeException("需要修改的数据为空；" + Thread.currentThread().getStackTrace()[1].getMethodName());
+            log.error("需要修改的数据为空；" + Thread.currentThread().getStackTrace()[1].getMethodName());
         }
 
-        String userIdStr = String.valueOf(userId);
 
         if (userMapper.selectByUserIdUser(userId).getUsername().equals(newUsername)) {
-            throw new RuntimeException("新用户名和旧用户名相同");
+            log.warn("新用户名和旧用户名相同");
         }
 
         if (userMapper.selectByUsernameUser(newUsername) != null) {
-            throw new RuntimeException("用户名已经存在");
+            log.warn("用户名已经存在");
         }
 
-        redisUtil.del(userIdStr);
+        redisUtil.del(REDIS_USER_ID_PREFIX + userId);
 
         Map<String, Object> map = new HashMap<>();
         map.put(USERID, userId);
@@ -158,7 +156,6 @@ public class UserServiceImpl implements UserService {
         if ( userMapper.updateUser(map) > 0 ) {
             // 更新redis中的缓存
             updateRedisByUsers();
-            selectUser(userId);
             return true;
         }
         return false;
@@ -168,10 +165,10 @@ public class UserServiceImpl implements UserService {
     public boolean updatePassword(Integer userId, String password) {
 
         if (objectIsNull(password)) {
-            throw new RuntimeException("需要修改的数据为空；" + Thread.currentThread().getStackTrace()[1].getMethodName());
+            log.error("需要修改的数据为空；" + Thread.currentThread().getStackTrace()[1].getMethodName());
         }
 
-        redisUtil.del(String.valueOf(userId));
+        redisUtil.del(REDIS_USER_ID_PREFIX + userId);
 
         Map<String, Object> map = new HashMap<>();
         map.put(USERID, userId);
@@ -179,7 +176,6 @@ public class UserServiceImpl implements UserService {
 
         if (userMapper.updateUser(map) > 0) {
             updateRedisByUsers();
-            selectUser(userId);
             return true;
         }
         return false;
@@ -189,10 +185,10 @@ public class UserServiceImpl implements UserService {
     public boolean updateEmail(Integer userId, String email) {
 
         if (objectIsNull(email)) {
-            throw new RuntimeException("需要修改的数据为空；" + Thread.currentThread().getStackTrace()[1].getMethodName());
+            log.error("需要修改的数据为空；" + Thread.currentThread().getStackTrace()[1].getMethodName());
         }
 
-        redisUtil.del(String.valueOf(userId));
+        redisUtil.del(REDIS_USER_ID_PREFIX + userId);
 
         Map<String, Object> map = new HashMap<>();
         map.put(USERID, userId);
@@ -200,7 +196,32 @@ public class UserServiceImpl implements UserService {
 
         if (userMapper.updateUser(map) > 0) {
             updateRedisByUsers();
-            selectUser(userId);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 更新用户个人简介
+     *
+     * @param userId       需要更新邮箱的用户id
+     * @param introduction 新的个人简介
+     * @return 成功返回true，失败返回false
+     */
+    @Override
+    public boolean updateIntroduction(Integer userId, String introduction) {
+        if (objectIsNull(introduction)) {
+            log.error("需要修改的数据为空；" + Thread.currentThread().getStackTrace()[1].getMethodName());
+        }
+
+        redisUtil.del(REDIS_USER_ID_PREFIX + userId);
+
+        Map<String, Object> map = new HashMap<>();
+        map.put(USERID, userId);
+        map.put(INTRODUCTION, introduction);
+
+        if (userMapper.updateUser(map) > 0) {
+            updateRedisByUsers();
             return true;
         }
         return false;
@@ -208,21 +229,24 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public String getToken(Integer userId) {
-        if (redisUtil.hasKey(userId + USERTOKEN)) {
-            return  (String) redisUtil.get(userId + USERTOKEN);
+        String redisUserTokenName = REDIS_USER_ID_PREFIX + userId + REDIS_USER_TOKEN_SUFFIX;
+
+        if (redisUtil.hasKey(redisUserTokenName)) {
+            return  (String) redisUtil.get(redisUserTokenName);
         }
         String token = userMapper.selectToken(userId);
-        redisUtil.set(userId +USERTOKEN, token);
+        redisUtil.set(redisUserTokenName, token);
         return token;
     }
 
     @Override
     public boolean updateToken(Integer userId, String token) {
+        String redisUserTokenName = REDIS_USER_ID_PREFIX + userId + REDIS_USER_TOKEN_SUFFIX;
         Map<String, Object> map = new HashMap<>();
         // 查询redis中有没有该用户的token
-        if (redisUtil.hasKey(userId + USERTOKEN)) {
+        if (redisUtil.hasKey(redisUserTokenName)) {
             // 如果有，那就删除
-            redisUtil.del(userId + USERTOKEN);
+            redisUtil.del(redisUserTokenName);
         }
         // 如果没有，那么取消删除部分
         map.put(USERID, userId);
@@ -230,7 +254,7 @@ public class UserServiceImpl implements UserService {
 
         // 如果返回的成功数不为0，那么就将当前的token存入redis中
         if (userMapper.updateUser(map) > 0) {
-            redisUtil.set(userId + USERTOKEN, token);
+            redisUtil.set(redisUserTokenName, token);
             return true;
         }
         return false;
@@ -238,8 +262,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean delToken(Integer userId) {
+        String redisUserTokenName = REDIS_USER_ID_PREFIX + userId + REDIS_USER_TOKEN_SUFFIX;
 
-        redisUtil.del(userId + USERTOKEN);
+        redisUtil.del(redisUserTokenName);
         Map<String, Object> map = new HashMap<>();
         map.put(USERID, userId);
         map.put(TOKEN, "null");

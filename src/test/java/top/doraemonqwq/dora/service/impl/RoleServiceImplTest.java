@@ -3,7 +3,7 @@ package top.doraemonqwq.dora.service.impl;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import top.doraemonqwq.dora.entity.security.Role;
+import top.doraemonqwq.dora.entity.pojo.Role;
 
 import java.util.List;
 

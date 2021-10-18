@@ -1,15 +1,16 @@
 package top.doraemonqwq.dora.constant;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
 /**
  * @author Doraemon
  * @date 2021-09-09
  * security静态类
  */
+@Component
 public final class SecurityConstants {
 
-    private SecurityConstants() {
-        throw new IllegalStateException("Cannot create instance of static constant class");
-    }
 
     /**
      * 用于登录的 url
@@ -57,10 +58,20 @@ public final class SecurityConstants {
     /**
      * 当 Remember 是 false 时，token 有效时间 2 小时
      */
-    public static final long EXPIRATION_TIME = 60 * 60 * 2L;
+    public static long EXPIRATION_TIME;
 
     /**
      * 当 Remember 是 true 时，token 有效时间 7 天
      */
-    public static final long EXPIRATION_REMEMBER_TIME = 60 * 60 * 24 * 7L;
+    public static long EXPIRATION_REMEMBER_TIME;
+
+    @Value("${jwt-config.expiration-time}")
+    public void setExpirationTime(long expirationTime) {
+        EXPIRATION_TIME = expirationTime;
+    }
+
+    @Value("${jwt-config.expiration-remember-time}")
+    public void setExpirationRememberTime(long expirationRememberTime) {
+        EXPIRATION_REMEMBER_TIME = expirationRememberTime;
+    }
 }

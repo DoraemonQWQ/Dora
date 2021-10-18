@@ -22,3 +22,17 @@ spring:
 
 server:
   port: 8081
+
+jwt-config:
+#  以秒为单位
+  # 未勾选记住我是7天
+  expiration-time: 604800
+  # 勾选记住我是30天
+  expiration-remember-time: 2592000
+
+path:
+  image: "C:/Users/Doraemon/Desktop/开发路径/videos/"
+  video: "C:/Users/Doraemon/Desktop/开发路径/images/"
+
+log:
+  path: "C:/Users/Doraemon/Desktop/开发路径/logs/"

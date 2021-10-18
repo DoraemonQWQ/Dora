@@ -1,9 +1,8 @@
 package top.doraemonqwq.dora.service.impl;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import top.doraemonqwq.dora.dao.mapper.RoleMapper;
 import top.doraemonqwq.dora.dao.mapper.UserRoleMapper;
 import top.doraemonqwq.dora.service.RoleService;
 import top.doraemonqwq.dora.service.UserRoleService;
@@ -17,6 +16,7 @@ import java.util.List;
  * UserRoleService实现类
  */
 @Service("UserRoleServiceImpl")
+@Slf4j
 public class UserRoleServiceImpl implements UserRoleService {
     @Autowired
     private UserRoleMapper userRoleMapper;
@@ -40,7 +40,7 @@ public class UserRoleServiceImpl implements UserRoleService {
             Integer roleId = roleService.selectRole(role).getRoleId();
             int i = userRoleMapper.insertUserRoleAss(userId, roleId);
             if (i == 0) {
-                throw new RuntimeException("添加失败，有重复的roleId");
+                log.warn("添加失败，有重复的roleId");
             }
         }
 

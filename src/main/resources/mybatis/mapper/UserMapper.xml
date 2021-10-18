@@ -69,6 +69,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="token != null">
                 token = #{token},
             </if>
+            <if test="introduction != null">
+                introduction = #{introduction}
+            </if>
         </trim>
         where user_id = #{userId}
     </update>

@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import top.doraemonqwq.dora.entity.pojo.User;
 
+import java.util.Set;
+
 @SpringBootTest
 public class RedisUtilTest {
 
@@ -34,7 +36,13 @@ public class RedisUtilTest {
 
     @Test
     public void deleteKeyTest() {
-        redisUtil.del("testKey");
+        redisUtil.del("10*");
+    }
+
+    @Test
+    public void selectKeysByPrexTest() {
+        Set<String> strings = redisUtil.scan("10*");
+        System.out.println(strings);
     }
 
 }

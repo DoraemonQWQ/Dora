@@ -18,7 +18,7 @@ public class UserServiceImplTest {
     @Test
     public void insertUserTest() {
         User admin = new User(
-                "admin",
+                "admin1",
                 "123456",
                 "3028029456@qq.com",
                 "2021-09-06",
@@ -28,7 +28,7 @@ public class UserServiceImplTest {
 
     @Test
     public void selectOneUserTest() {
-        User user = userService.selectUser("admina");
+        User user = userService.selectUser(1001);
         System.out.println(user);
     }
 

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.doraemonqwq.dora.dao.mapper.UserLogMapper">
+    <resultMap id="userLog" type="UserLogPojo">
+        <result column="user_id" property="userId"/>
+        <result column="create_date" property="createDate"/>
+    </resultMap>
+
+    <select id="selectUserLog" resultMap="userLog">
+        select * from logging_user;
+    </select>
+
+    <select id="selectUserLogById" resultMap="userLog">
+        select * from logging_user where id = #{id};
+    </select>
+
+    <insert id="addUserLog" parameterType="UserLogPojo">
+        insert into logging_user(user_id, operation, method, params, ip, create_date)
+                    value (#{userId},#{operation},#{method},#{params},#{ip},#{createDate});
+    </insert>
+
+
+
+</mapper>

@@ -86,6 +86,14 @@ public interface UserService {
     boolean updateEmail(Integer userId, String email);
 
     /**
+     * 更新用户个人简介
+     * @param userId   需要更新邮箱的用户id
+     * @param introduction 新的个人简介
+     * @return          成功返回true，失败返回false
+     */
+    boolean updateIntroduction(Integer userId, String introduction);
+
+    /**
      * 查询token
      * @param userId 指定用户id
      * @return token

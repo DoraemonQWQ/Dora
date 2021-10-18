@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.doraemonqwq.dora.dao.mapper.MmdMapper">
+    <resultMap id="mmd" type="MmdPojo">
+        <result column="mmd_id" property="id"/>
+    </resultMap>
+
+
+    <select id="selectMmds" resultMap="mmd">
+        select * from mmds
+    </select>
+
+    <select id="selectMmdsByFuzzyText" resultMap="mmd">
+        select * from mmds where name like concat(concat('%', #{text}),'%')
+    </select>
+
+    <select id="selectMmdById" resultMap="mmd">
+        select * from mmds where mmd_id = #{id}
+    </select>
+
+    <insert id="addMmd" parameterType="MmdPojo">
+        insert into
+            mmds(name,introduction) value (#{name},#{introduction})
+    </insert>
+
+    <update id="updateMmd" parameterType="map">
+        update mmds
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null">
+                name = #{name},
+            </if>
+            <if test="introduction != null">
+                introduction = #{introduction},
+            </if>
+            where mmd_id = #{id}
+        </trim>
+    </update>
+
+    <delete id="delMmd" parameterType="int">
+        delete from mmds where mmd_id = #{id}
+    </delete>
+
+</mapper>

@@ -16,6 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.filter.CorsFilter;
 import org.zalando.problem.spring.web.advice.security.SecurityProblemSupport;
+import top.doraemonqwq.dora.constant.ResourceUrlConstants;
 import top.doraemonqwq.dora.constant.SecurityConstants;
 import top.doraemonqwq.dora.filter.JwtAuthorizationFilter;
 import top.doraemonqwq.dora.security.customize.CustomizeAccessDeniedHandler;
@@ -53,7 +54,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
      * 此方法内的资源路径请求，都会跳过security认证
      */
     @Override
-    public void configure(WebSecurity web) throws Exception {
+    public void configure(WebSecurity web) {
         web.ignoring()
                 // 忽略所有options请求
                 .antMatchers(HttpMethod.OPTIONS, "/**")
@@ -68,9 +69,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/h2")
                 .antMatchers("/constant/**")
                 // 忽略所有swagger相关请求路径
-                .antMatchers("/webjars/springfox-swagger-ui/**")
+                .antMatchers("/swagger-ui/**")
                 .antMatchers("/swagger-resources/**")
-                .antMatchers("/swagger-ui.html");
+                .antMatchers("/v3/**");
 
     }
 
@@ -98,11 +99,15 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 // 放行登录路径和注册路径
                 .antMatchers(HttpMethod.POST, SecurityConstants.AUTH_LOGIN_URL).permitAll()
                 .antMatchers(HttpMethod.POST, SecurityConstants.AUTH_LOGGING_URL).permitAll()
-                // 放行全年龄主页，全年龄动漫详细页面，全年龄动漫播放页面
-                .antMatchers(HttpMethod.POST, "/api/show-all-ages/**").permitAll()
-                // 放行视频请求页面
-                .antMatchers(HttpMethod.GET, "/api/test/video/**").permitAll()
-//                .antMatchers(HttpMethod.POST, "/api/test/video/**").permitAll()
+                // 放行公开页面的数据请求
+                .antMatchers(HttpMethod.POST, "/api/public-data/**").permitAll()
+                // 放行视频请求接口
+                .antMatchers(HttpMethod.GET, ResourceUrlConstants.VIDEO_API).permitAll()
+                // 放行图片请求接口
+                .antMatchers(HttpMethod.GET, ResourceUrlConstants.IMAGE_API).permitAll()
+                // 放行测试接口
+                .antMatchers(HttpMethod.GET, "/api/test/**").permitAll()
+                .antMatchers(HttpMethod.POST, "/api/test/**").permitAll()
                 // 其余的请求路径都需要验证
                 .anyRequest().authenticated()
             .and()

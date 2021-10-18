@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.doraemonqwq.dora.dao.mapper.ImagesMapper">
+
+    <!-- 根据userId查询用户名 -->
+    <select id="selectImagesAssByUserId" resultType="ImagePojo">
+        select images.id, images.name, images.url from user
+              left join user_images_ass uia on user.user_id = uia.user_id
+              left join images on images.id = uia.image_id where user.user_id = #{user_id};
+    </select>
+
+    <!-- 根据animeId查询用户名 -->
+    <select id="selectImagesAssByAnimeId" resultType="ImagePojo">
+        select images.id, images.name, images.url from animes
+               left join animes_images_ass aia on animes.anime_id = aia.anime_id
+               left join images on images.id = aia.image_id where animes.anime_id = #{anime_id};
+    </select>
+
+    <!-- 根据mmdId查询用户名 -->
+    <select id="selectImagesAssByMmdId" resultType="ImagePojo">
+        select images.id, images.name, images.url from mmds
+               left join mmd_images_ass mia on mmds.mmd_id = mia.mmd_id
+               left join images on images.id = mia.image_id where mmds.mmd_id = #{mmd_id};
+    </select>
+
+    <!-- 根据gameId查询用户名 -->
+    <select id="selectImagesAssByGameId" resultType="ImagePojo">
+        select images.id, images.name, images.url from games
+               left join game_images_ass gia on games.game_id = gia.game_id
+               left join images on images.id = gia.image_id where games.game_id = #{game_id};
+    </select>
+
+    <select id="selectImageById" resultType="ImagePojo">
+        select * from images where images.id = #{image_id};
+    </select>
+
+    <select id="selectImageByName" resultType="int">
+        select images.id from images where images.name = #{image_name};
+    </select>
+
+
+    <insert id="addImage" parameterType="ImagePojo">
+        insert into images(name,url) value (#{name}, #{url});
+    </insert>
+
+    <!-- 添加从表数据 -->
+    <insert id="addImageUserAss" parameterType="int">
+        insert into user_images_ass (user_id, image_id) VALUE (#{user_id}, #{image_id})
+    </insert>
+
+    <!-- 添加从表数据 -->
+    <insert id="addImageAnimeAss" parameterType="int">
+        insert into anime_images_ass (anime_id, image_id) VALUE (#{anime_id}, #{image_id})
+    </insert>
+
+    <!-- 添加从表数据 -->
+    <insert id="addImageMmdAss" parameterType="int">
+        insert into mmd_images_ass (mmd_id, image_id) VALUE (#{mmd_id}, #{image_id})
+    </insert>
+
+    <!-- 添加从表数据 -->
+    <insert id="addImageGameAss" parameterType="int">
+        insert into game_images_ass (game_id, image_id) VALUE (#{game_id}, #{image_id})
+    </insert>
+    
+    <update id="updateImage" parameterType="map">
+        update images set
+            <trim prefix="SET" suffixOverrides=",">
+                <if test="name != null">
+                    name = #{name},
+                </if>
+                <if test="url != null">
+                    url = #{url},
+                </if>
+            </trim>
+            where id = #{id}
+    </update>
+
+    <delete id="delImage" parameterType="int">
+        delete from images where id = #{image_id}
+    </delete>
+
+</mapper>

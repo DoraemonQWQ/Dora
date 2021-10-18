@@ -1,8 +1,5 @@
 package top.doraemonqwq.dora.entity.pojo;
 
-import cn.hutool.core.lang.UUID;
-import lombok.Data;
-
 /**
  * @author Doraemon
  * User表的实体类
@@ -22,6 +19,7 @@ public class User {
     private String email;
     private String creationDate;
     private String lastLoginTime;
+    private String introduction;
 
     public User(String username, String password, String email, String creationDate, String lastLoginTime) {
         this.username = username;
@@ -77,6 +75,14 @@ public class User {
 
     public void setLastLoginTime(String lastLoginTime) {
         this.lastLoginTime = lastLoginTime;
+    }
+
+    public String getIntroduction() {
+        return introduction;
+    }
+
+    public void setIntroduction(String introduction) {
+        this.introduction = introduction;
     }
 
     @Override

@@ -1,4 +1,4 @@
-package top.doraemonqwq.dora.entity.security;
+package top.doraemonqwq.dora.entity.pojo;
 
 /**
  * @author Doraemon
